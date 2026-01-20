@@ -4,6 +4,7 @@
 #include <DX3D/Graphics/SwapChain.h>
 #include <DX3D/Graphics/VertexBuffer.h>
 #include <DX3D/Math/Vec3.h>
+#include <fstream>
 
 using namespace dx3d;
 
@@ -14,20 +15,15 @@ dx3d::GraphicsEngine::GraphicsEngine(const GraphicsEngineDesc& desc): Base(desc.
 	auto& device = *m_graphicsDevice;
 	m_deviceContext = device.createDeviceContext();
 
+	constexpr char shaderFilePath[] = "DX3D/Assets/Shaders/Basic.hlsl";
+	std::ifstream shaderStream(shaderFilePath);
+	if (!shaderStream) DX3DLogThrowError("Failed to open shader file.");
+
 	//使用constexpr 在compile time evaluate數值
-	constexpr char shaderSourceCode[] =               //vertex shader code
+	constexpr char shaderSourceCode[] = R"()";            //vertex shader code
 //把模型的頂點位置傳進來，加上一個 w=1.0，然後傳回，讓 GPU 知道這個頂點要畫在哪裡
 //POSITION為語意標記（Semantic），代表輸入的頂點位置。
-		R"(
-float4 VSMain(float3 pos: POSITION): SV_Position     
-{
-return float4(pos.xyz, 1.0);                      
-}
-float4 PSMain(): SV_Target
-{
-return float4(1.0, 1.0, 1.0, 1.0);  //這個pixel shader會回傳白色
-}
-)";
+		
 	constexpr char shaderSourceName[] = "Basic";
 	constexpr auto shaderSourceCodeSize = std::size(shaderSourceCode);
 
